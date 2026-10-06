@@ -5,16 +5,16 @@ This is a work in progress DOOM II port for [Alpine Launcher](https://play.googl
 ---------------------------------------------------------------------
 WHAT WORKS:
 ---------------------------------------------------------------------
-The full game from start to end
+-The full game from start to end
 
 ---------------------------------------------------------------------
 WHAT DONT WORKS:
 ---------------------------------------------------------------------
-The music. 
+-The music. 
 
-The full screen (without stretching).
+-The full screen (without stretching).
 
-The transitions.
+-The transitions.
 
 ---------------------------------------------------------------------
 HOW TO INSTALL:
