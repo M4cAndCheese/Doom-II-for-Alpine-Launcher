@@ -10,11 +10,11 @@ The full game from start to end
 ---------------------------------------------------------------------
 WHAT DONT WORKS:
 
-The music isn't playing.
+The music. 
 
-The game does not display in full screen (without stretching).
+The full screen (without stretching).
 
-The transitions are literally non-existent
+The transitions.
 
 ---------------------------------------------------------------------
 HOW TO INSTALL:
