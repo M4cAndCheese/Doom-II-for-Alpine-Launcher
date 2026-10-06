@@ -1,6 +1,9 @@
-Doom for Alpine Launcher (Crispy Doom, pantalla ancha, stick analogico, guardado)
+DOOM II port for Alpine Launcher
 
-COMO INSTALAR
+This is a work in progress port of DOOM II for the Alpine Launcher app 
+---------------------------------------------------------------------
+HOW TO INSTALL:
+
 1. Actions > workflow "build" > Run workflow.
 2. Descarga el zip "doom-alpine" del resultado y descomprimelo.
 3. Pon tu WAD legal en la carpeta wad/ con el nombre en minusculas:
