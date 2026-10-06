@@ -14,6 +14,7 @@ The music isn't playing.
 The game does not display in full screen (without stretching).
 
 The transitions are literally non-existent
+
 ---------------------------------------------------------------------
 HOW TO INSTALL:
 1. Go to actions and run the "build" workflow 
