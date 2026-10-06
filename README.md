@@ -35,5 +35,6 @@ Use the numbers for changing your weapon
 
 ---------------------------------------------------------------------
 CREDITS & ACKNOWLEDGEMENTS:
+
 id Software, the original creators of Doom II for PC, and for sharing the original DOOM II code.
 The Crispy Doom and Doomgeneric Team because I used that engines for the port
