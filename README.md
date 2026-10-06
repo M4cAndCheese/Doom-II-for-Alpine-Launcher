@@ -24,10 +24,15 @@ HOW TO INSTALL:
 5. Go to App Studio in Alpine Launcher and import the zip
 6. Play!
 ---------------------------------------------------------------------
+
 CONTROLS:
+
 Use the joystick for moving
+
 Use the "ok" button to confirm in the menus
+
 Use the numbers for changing your weapon
+
 ---------------------------------------------------------------------
 CREDITS & ACKNOWLEDGEMENTS:
 id Software, the original creators of Doom II for PC, and for sharing the original DOOM II code.
