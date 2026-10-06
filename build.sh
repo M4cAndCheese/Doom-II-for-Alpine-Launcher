@@ -10,13 +10,17 @@ else
   bash build_doomgeneric.sh
 fi
 set -e
-echo "Pon aqui tu DOOM.WAD renombrado a doom.wad (minusculas)." > dist/wad/LEEME.txt
+echo "Pon aqui tu DOOM2.WAD renombrado a doom2.wad (minusculas)." > dist/wad/LEEME.txt
 if [ -n "$1" ]; then
-  WAD=$(find "$1" -maxdepth 1 \( -iname doom.wad -o -iname doom1.wad \) | head -1)
-  [ -n "$WAD" ] || { echo "No hay DOOM.WAD ni DOOM1.WAD en $1"; exit 1; }
+  WAD=$(find "$1" -maxdepth 1 \( -iname doom2.wad -o -iname doom.wad -o -iname doom1.wad \) | head -1)
+  [ -n "$WAD" ] || { echo "No hay DOOM2.WAD, DOOM.WAD ni DOOM1.WAD en $1"; exit 1; }
   cp "$WAD" "dist/wad/$(basename "$WAD" | tr 'A-Z' 'a-z')"
 fi
 cp manifest.json icon.png dist/
+SZ=$(du -sb dist | cut -f1)
+TOT=$((SZ + 15300000))
+echo "Tamano sin WAD: $((SZ/1024)) KB. Con doom2.wad (~14,6 MB): ~$((TOT/1048576)) MB de 20 MB permitidos."
+[ "$TOT" -gt 20971520 ] && echo "AVISO: con doom2.wad se pasa del limite de 20 MB del launcher."
 python3 -c "import shutil;shutil.make_archive('doom-native','zip','dist')"
 du -sh dist
 echo "Motor usado: $(cat dist/motor.txt)"

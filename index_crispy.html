@@ -112,10 +112,10 @@ var Module = {
       await new Promise(r => A.sync(true, r));
       msg.textContent = 'Cargando WAD…';
       let name = null, data = null;
-      for (const n of ['doom.wad', 'DOOM.WAD', 'doom1.wad', 'DOOM1.WAD']) {
+      for (const n of ['doom2.wad', 'DOOM2.WAD', 'doom.wad', 'DOOM.WAD', 'doom1.wad', 'DOOM1.WAD', 'tnt.wad', 'TNT.WAD', 'plutonia.wad', 'PLUTONIA.WAD']) {
         try { const r = await fetch('wad/' + n); if (r.ok) { data = new Uint8Array(await r.arrayBuffer()); name = n; break; } } catch (e) {}
       }
-      if (!name) { msg.textContent = 'Falta wad/doom.wad dentro del zip'; return; }
+      if (!name) { msg.textContent = 'Falta wad/doom2.wad (o doom.wad) dentro del zip'; return; }
       A.write('/' + name, data);
       A.write('/saves/default.cfg', cfgMain());
       A.write('/saves/crispy-doom.cfg', cfgCrispy());
@@ -142,6 +142,16 @@ function key(id, p) {
 function releaseAll() { for (const id in cnt) { if (cnt[id] > 0) { cnt[id] = 1; key(+id, 0); } } }
 function axis(x, y) { try { Module.ccall('alpine_move', null, ['number', 'number'], [x, y]); } catch (e) {} }
 function look(dx) { try { Module.ccall('alpine_look', null, ['number'], [dx]); } catch (e) {} }
+
+// Botón Atrás del sistema: abre/cierra el menú de Doom (Esc). Dos veces seguidas (en menos de 0.7 s) cierra la app.
+let lastBack = 0;
+window.alpineBack = function () {
+  const now = Date.now();
+  if (now - lastBack < 700) return false;
+  lastBack = now;
+  key(10, 1); setTimeout(() => key(10, 0), 80);
+  return true;
+};
 
 /* ---------- Controles (posición = centro, en fracción de pantalla) ---------- */
 const CTRL = [
