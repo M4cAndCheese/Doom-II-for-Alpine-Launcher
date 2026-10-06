@@ -1,0 +1,41 @@
+name: build
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mymindstorm/setup-emsdk@v14
+      - name: Compilar
+        shell: bash
+        run: bash build.sh 2>&1 | tee build.log
+      - name: Resumen
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Resultado"
+            if [ -f dist/motor.txt ]; then echo "- Motor: **$(cat dist/motor.txt)** (crispy = pantalla ancha; doomgeneric = respaldo 4:3)"; else echo "- Motor: **no se genero**"; fi
+            if [ -f dist/doom.js ]; then echo "- doom.js: $(du -h dist/doom.js | cut -f1)"; fi
+            grep -E "Tamano sin WAD|AVISO|MOTOR:|musica OPL|Archivos fuente" build.log | sed "s/^/- /" || true
+            echo ""
+            echo "Descarga el artifact **doom-alpine**, pon tu WAD en wad/doom2.wad (minusculas), comprime y importa en App Studio."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: doom-alpine
+          path: dist
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: ignore
