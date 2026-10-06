@@ -4,11 +4,11 @@ DOOM II port for Alpine Launcher
 This is a work in progress port of DOOM II for the Alpine Launcher app 
 ---------------------------------------------------------------------
 WHAT WORKS:
-*The full game from start to end
+The full game from start to end
 WHAT DONT WORKS:
-*The music isn't playing.
-*The game does not display in full screen (without stretching).
-*The transitions are literally non-existent
+The music isn't playing.
+The game does not display in full screen (without stretching).
+The transitions are literally non-existent
 ---------------------------------------------------------------------
 HOW TO INSTALL:
 1. Go to actions and run the "build" workflow 
