@@ -24,7 +24,7 @@ jobs:
             echo "## Resultado"
             if [ -f dist/motor.txt ]; then echo "- Motor: **$(cat dist/motor.txt)** (crispy = pantalla ancha; doomgeneric = respaldo 4:3)"; else echo "- Motor: **no se genero**"; fi
             if [ -f dist/doom.js ]; then echo "- doom.js: $(du -h dist/doom.js | cut -f1)"; fi
-            grep -E "Tamano sin WAD|AVISO|MOTOR:|musica OPL|Archivos fuente" build.log | sed "s/^/- /" || true
+            grep -E "Tamano sin WAD|AVISO|MOTOR:|musica OPL|Archivos fuente|PARCHE" build.log | sed "s/^/- /" || true
             echo ""
             echo "Descarga el artifact **doom-alpine**, pon tu WAD en wad/doom2.wad (minusculas), comprime y importa en App Studio."
           } >> "$GITHUB_STEP_SUMMARY"

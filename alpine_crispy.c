@@ -40,6 +40,7 @@ static int map_key(int id) {
     case 10: return KEY_ESCAPE;
     case 11: return KEY_TAB;
     case 12: return 'y';
+    case 13: return 'n';
     default: if (id >= 20 && id <= 26) return '1' + (id - 20);
   }
   return -1;

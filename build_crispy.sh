@@ -81,11 +81,27 @@ def patch_wipe(root):
             '    int done;\n'
             '    if (tics <= 0) return;\n'
             '    alpine_wipestart = nowtime;\n' + stmts + '\n'
-            '    if (done) alpine_wipe_active = 0;\n}\n\n')
-    s2 = s[:m.start()] + 'alpine_wipestart = I_GetTime () - 1;\n    alpine_wipe_active = 1;' + s[ml.end():]
+            '    if (done) { alpine_wipe_active = 0; printf("alpine: transicion terminada\\n"); }\n}\n\n')
+    s2 = s[:m.start()] + 'alpine_wipestart = I_GetTime () - 1;\n    alpine_wipe_active = 1; printf("alpine: transicion iniciada\\n");' + s[ml.end():]
     wr(p, 'static int alpine_wipe_active = 0;\nstatic int alpine_wipestart = 0;\n' + s2)
     print('PARCHE transiciones: OK')
     return step
+
+
+def patch_savename(root):
+    """Pone un nombre por defecto al guardar: no hay teclado en pantalla para escribirlo."""
+    p = os.path.join(root, 'src', 'doom', 'm_menu.c')
+    s = rd(p)
+    pat = re.compile(r'if\s*\(\s*savegamestrings\s*\[\s*saveSlot\s*\]\s*\[\s*0\s*\]\s*\)')
+    new = ('if (savegamestrings[saveSlot][0] == 0) '
+           'M_snprintf(savegamestrings[saveSlot], SAVESTRINGSIZE, "PARTIDA %d", saveSlot + 1);\n'
+           '                if (savegamestrings[saveSlot][0])')
+    s2, n = pat.subn(lambda m: new, s)
+    if n == 0:
+        print('AVISO: no se encontro el guardado de partida; hara falta escribir un nombre para guardar')
+        return
+    wr(p, s2)
+    print('PARCHE nombre de partida: OK (%d)' % n)
 
 
 def patch_hook(root):
@@ -151,6 +167,7 @@ def collect(root):
         if p not in incs:
             incs.append(p)
     print('Archivos fuente:', len(final))
+    print('Archivos de musica OPL:', len([f for f in final if os.sep + 'opl' + os.sep in f or os.path.basename(f).startswith('i_oplmusic')]))
     if len(final) < 50:
         raise SystemExit('Muy pocos archivos fuente: seleccion de objetivos incorrecta')
     return final, incs, defs
@@ -176,6 +193,7 @@ def compile_all(srcs, incs, defs):
 def main():
     step = patch_wipe(R)
     patch_loop(R, step)
+    patch_savename(R)
     patch_hook(R)
     sanitize_config(R)
     srcs, incs, defs = collect(R)

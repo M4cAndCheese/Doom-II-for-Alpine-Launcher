@@ -48,6 +48,7 @@
   <div class="row"><button id="phide">Ocultar</button><button id="preset">Restablecer</button></div>
   <div class="row"><button id="pcam">Cámara: analógica</button></div>
   <div class="row"><button id="plog">Ver registro del motor</button></div>
+  <div class="row"><button id="psnd">Ver registro de sonido y guardado</button></div>
   <div class="row"><button id="pdone">Listo</button></div>
   <small>Arrastra cada control para moverlo.</small>
 </div>
@@ -58,11 +59,12 @@ try { Alpine.host.chrome.setStatusBar('fullscreen'); Alpine.host.chrome.setOrien
 /* ---------- Motor (Crispy Doom) ---------- */
 const msg = document.getElementById('msg'), logEl = document.getElementById('log'), cvs = document.getElementById('canvas');
 const lines = [];
-let logOn = false;
+let logOn = false, logFilter = null;
+function showLog() { const v = logFilter ? lines.filter(l => logFilter.test(l)) : lines; logEl.textContent = v.slice(-22).join('\n'); }
 function L(t) {
-  t = String(t); lines.push(t); if (lines.length > 18) lines.shift();
+  t = String(t); lines.push(t); if (lines.length > 600) lines.shift();
   if (/error|fail|cannot|could not|unable|abort/i.test(t)) logOn = true;
-  if (logOn) logEl.textContent = lines.join('\n');
+  if (logOn) showLog();
 }
 window.onerror = (m, s, l) => L('ERROR: ' + m + ' (' + String(s || '').split('/').pop() + ':' + l + ')');
 window.addEventListener('unhandledrejection', e => L('ERROR: ' + (e.reason && e.reason.message || e.reason)));
@@ -91,10 +93,16 @@ function cfgMain() {
 }
 // Pantalla panorámica automática según la proporción del teléfono.
 function cfgCrispy() {
-  const r = innerWidth / innerHeight, ws = r >= 2.1 ? 4 : r >= 1.7 ? 3 : 2;
+  const ws = 1; // 1 = Match screen: usa la proporción exacta de tu pantalla (Crispy admite hasta 24:9)
   return ['crispy_widescreen ' + ws, 'crispy_hires 1', 'crispy_uncapped 0', 'crispy_smoothscaling 1',
     'crispy_brightmaps 1', 'crispy_translucency 1'].join('\n') + '\n';
 }
+// "Match screen" lee el tamaño de pantalla del dispositivo: lo igualamos a la ventana para que la imagen sea exacta.
+try {
+  const sc = () => Math.max(1, Math.min(window.devicePixelRatio || 1, 2560 / innerWidth, 2.5));
+  Object.defineProperty(screen, 'width', { get: () => Math.round(innerWidth * sc()), configurable: true });
+  Object.defineProperty(screen, 'height', { get: () => Math.round(innerHeight * sc()), configurable: true });
+} catch (e) {}
 function geometry() {
   const s = Math.max(1, Math.min(window.devicePixelRatio || 1, 2560 / innerWidth, 2.5));
   return Math.round(innerWidth * s) + 'x' + Math.round(innerHeight * s);
@@ -126,6 +134,8 @@ var Module = {
           '-savedir', '/saves/', '-window', '-geometry', geometry()]);
       } catch (e) { if (String(e).indexOf('unwind') < 0) L('ERROR: ' + e); }
       setInterval(() => A.sync(false), 4000);
+      document.addEventListener('visibilitychange', () => { if (document.hidden) A.sync(false); });
+      addEventListener('pagehide', () => A.sync(false));
       [300, 1500, 4000].forEach(t => setTimeout(() => { unlockAudio(); const c = Module.SDL2 && Module.SDL2.audioContext; L('audio: ' + (c ? c.state : 'sin contexto')); }, t));
     } catch (e) { msg.textContent = 'Error: ' + e; }
   }
@@ -164,6 +174,8 @@ const CTRL = [
   { id: 'esc', k: 10, label: 'MENÚ', name: 'Menú', x: .95, y: .09, size: 48, sq: 1 },
   { id: 'ok', k: 9, label: 'OK', name: 'Aceptar (Enter)', x: .89, y: .09, size: 48, sq: 1 },
   { id: 'map', k: 11, label: 'MAPA', name: 'Mapa', x: .83, y: .09, size: 48, sq: 1 },
+  { id: 'yes', k: 12, label: 'SÍ', name: 'Sí (Y)', x: .77, y: .09, size: 48, sq: 1 },
+  { id: 'no', k: 13, label: 'NO', name: 'No (N)', x: .71, y: .09, size: 48, sq: 1 },
 ];
 for (let i = 0; i < 7; i++) CTRL.push({ id: 'w' + (i + 1), k: 20 + i, label: String(i + 1), name: 'Arma ' + (i + 1), x: .04 + i * .055, y: .09, size: 44, sq: 1 });
 CTRL.forEach(c => { c.s = 1; c.h = false; c.name = c.name || c.label; });
@@ -324,7 +336,8 @@ $('pop').value = op * 100;
 $('psens').value = sens;
 camLabel();
 CTRL.forEach(apply);
-$('plog').onclick = () => { logOn = !logOn; logEl.textContent = logOn ? lines.join('\n') : ''; };
+$('plog').onclick = () => { logFilter = null; logOn = !logOn; if (logOn) showLog(); else logEl.textContent = ''; };
+$('psnd').onclick = () => { logFilter = /snd|sound|music|opl|audio|mix|sdl|midi|wipe|transici|save|guard/i; logOn = true; showLog(); };
 </script>
 <script src="doom.js" onerror="msg.textContent='No cargó doom.js (¿falta en el zip?)'"></script>
 </body></html>
