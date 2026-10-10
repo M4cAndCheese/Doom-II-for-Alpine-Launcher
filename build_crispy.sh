@@ -129,6 +129,9 @@ def sanitize_config(root):
     print('config.h revisado')
 
 
+RENAMED = []
+
+
 def collect(root):
     cc = json.load(open(os.path.join(root, 'build', 'compile_commands.json')))
     skip = re.compile(r'heretic|hexen|strife|setup|server|midiread|fuzz|test')
@@ -162,8 +165,8 @@ def collect(root):
             print('Se omite (duplica z_zone.c):', base)
             continue
         if base != 'i_main.c' and re.search(r'^\s*(int|void)\s+main\s*\(', rd(f), re.M):
-            print('Se omite (tiene otro main):', base)
-            continue
+            print('Main renombrado (no es el principal):', base)
+            RENAMED.append(f)
         final.append(f)
     for extra in ('src', os.path.join('src', 'doom'), 'build'):
         p = os.path.abspath(os.path.join(root, extra))
@@ -177,9 +180,21 @@ def collect(root):
 
 
 def compile_all(srcs, incs, defs):
+    # Archivos con su propio main (midifile.c, etc.): se compilan aparte con main renombrado
+    base_flags = (['emcc', '-O2', '-w', '-Wno-implicit-function-declaration', '-Wno-int-conversion',
+                   '-Wno-incompatible-pointer-types'] + ['-I' + i for i in incs] + defs)
+    os.makedirs('/tmp/alpine_obj', exist_ok=True)
+    objs = []
+    for i, f in enumerate(RENAMED):
+        o = '/tmp/alpine_obj/%d.o' % i
+        r = subprocess.run(base_flags + ['-Dmain=alpine_unused_main', '-c', f, '-o', o])
+        if r.returncode != 0:
+            raise SystemExit('emcc fallo al compilar ' + f)
+        objs.append(o)
+    srcs = [x for x in srcs if x not in RENAMED]
     cmd = (['emcc', '-O2', '-w', '-Wno-implicit-function-declaration', '-Wno-int-conversion',
             '-Wno-incompatible-pointer-types']
-           + ['-I' + i for i in incs] + defs + ['alpine_crispy.c'] + srcs +
+           + ['-I' + i for i in incs] + defs + ['alpine_crispy.c'] + srcs + objs +
            ['-sUSE_SDL=2', '-sUSE_SDL_MIXER=2', '-sUSE_SDL_NET=2',
             '-sSINGLE_FILE=1', '-sALLOW_MEMORY_GROWTH=1', '-sINITIAL_MEMORY=128MB', '-sSTACK_SIZE=2MB',
             '-sFORCE_FILESYSTEM=1', '-lidbfs.js', '-sINVOKE_RUN=0', '-sEXIT_RUNTIME=0', '-sENVIRONMENT=web',
