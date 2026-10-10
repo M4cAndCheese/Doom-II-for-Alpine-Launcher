@@ -59,7 +59,7 @@ try { Alpine.host.chrome.setStatusBar('fullscreen'); Alpine.host.chrome.setOrien
 /* ---------- Motor (Crispy Doom) ---------- */
 const msg = document.getElementById('msg'), logEl = document.getElementById('log'), cvs = document.getElementById('canvas');
 const lines = [];
-let logOn = false, logFilter = null;
+let logOn = true, logFilter = null;
 function showLog() { const v = logFilter ? lines.filter(l => logFilter.test(l)) : lines; logEl.textContent = v.slice(-22).join('\n'); }
 function L(t) {
   t = String(t); lines.push(t); if (lines.length > 600) lines.shift();
