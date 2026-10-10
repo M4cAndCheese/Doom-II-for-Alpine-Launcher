@@ -89,19 +89,20 @@ def patch_wipe(root):
 
 
 def patch_savename(root):
-    """Pone un nombre por defecto al guardar: no hay teclado en pantalla para escribirlo."""
+    """Al guardar, rellena un nombre ("PARTIDA N") para no necesitar teclado."""
     p = os.path.join(root, 'src', 'doom', 'm_menu.c')
-    s = rd(p)
-    pat = re.compile(r'if\s*\(\s*savegamestrings\s*\[\s*saveSlot\s*\]\s*\[\s*0\s*\]\s*\)')
-    new = ('if (savegamestrings[saveSlot][0] == 0) '
-           'M_snprintf(savegamestrings[saveSlot], SAVESTRINGSIZE, "PARTIDA %d", saveSlot + 1);\n'
-           '                if (savegamestrings[saveSlot][0])')
-    s2, n = pat.subn(lambda m: new, s)
-    if n == 0:
-        print('AVISO: no se encontro el guardado de partida; hara falta escribir un nombre para guardar')
+    if not os.path.exists(p):
+        print('AVISO: no se encontro m_menu.c; guardar pedira escribir un nombre')
         return
-    wr(p, s2)
-    print('PARCHE nombre de partida: OK (%d)' % n)
+    s = rd(p)
+    m = re.search(r'saveCharIndex\s*=\s*strlen\s*\(\s*savegamestrings\s*\[\s*choice\s*\]\s*\)\s*;', s)
+    if not m or 'PARTIDA' in s:
+        print('AVISO: no se pudo parchear el nombre de guardado')
+        return
+    ins = ('if (savegamestrings[choice][0] == 0)\n'
+           '        snprintf(savegamestrings[choice], SAVESTRINGSIZE, "PARTIDA %d", choice + 1);\n    ')
+    wr(p, '#include <stdio.h>\n' + s[:m.start()] + ins + s[m.start():])
+    print('PARCHE nombre de guardado: OK')
 
 
 def patch_hook(root):

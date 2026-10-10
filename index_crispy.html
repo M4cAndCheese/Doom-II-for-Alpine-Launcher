@@ -126,8 +126,6 @@ var Module = {
       A.write('/' + name, data);
       A.write('/saves/default.cfg', cfgMain());
       A.write('/saves/crispy-doom.cfg', cfgCrispy());
-      msg.textContent = 'Toca para jugar';
-      await new Promise(r => msg.addEventListener('pointerup', r, { once: true }));
       msg.remove();
       try {
         Module.callMain(['-iwad', '/' + name, '-config', '/saves/default.cfg', '-extraconfig', '/saves/crispy-doom.cfg',
@@ -174,6 +172,8 @@ const CTRL = [
   { id: 'esc', k: 10, label: 'MENÚ', name: 'Menú', x: .95, y: .09, size: 48, sq: 1 },
   { id: 'ok', k: 9, label: 'OK', name: 'Aceptar (Enter)', x: .89, y: .09, size: 48, sq: 1 },
   { id: 'map', k: 11, label: 'MAPA', name: 'Mapa', x: .83, y: .09, size: 48, sq: 1 },
+  { id: 'save', k: 14, label: 'GUARDAR', name: 'Guardar partida (F6)', x: .53, y: .09, size: 60, sq: 1 },
+  { id: 'load', k: 15, label: 'CARGAR', name: 'Cargar partida (F9)', x: .60, y: .09, size: 60, sq: 1 },
   { id: 'yes', k: 12, label: 'SÍ', name: 'Sí (Y)', x: .77, y: .09, size: 48, sq: 1 },
   { id: 'no', k: 13, label: 'NO', name: 'No (N)', x: .71, y: .09, size: 48, sq: 1 },
 ];
