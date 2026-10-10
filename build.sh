@@ -2,12 +2,13 @@
 # Uso: bash build.sh [CARPETA_CON_DOOM.WAD]
 # Intenta Crispy Doom (ultrawide); si falla, usa doomgeneric (la version estable).
 rm -rf dist && mkdir -p dist/wad
+# Solo Crispy Doom (pantalla panoramica). Si falla, el build se detiene
+# en vez de entregar doomgeneric (4:3), que se veria estirado en ultrawide.
 if bash build_crispy.sh; then
   echo "=== MOTOR: Crispy Doom ==="
 else
-  echo "=== MOTOR: Crispy Doom fallo; se usa doomgeneric (4:3) ==="
-  rm -rf dist && mkdir -p dist/wad
-  bash build_doomgeneric.sh
+  echo "ERROR: Crispy Doom no compilo; no se genera version 4:3"
+  exit 1
 fi
 set -e
 echo "Pon aqui tu DOOM2.WAD renombrado a doom2.wad (minusculas)." > dist/wad/LEEME.txt
