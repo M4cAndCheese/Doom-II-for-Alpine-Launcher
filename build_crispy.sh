@@ -182,7 +182,8 @@ def collect(root):
 def compile_all(srcs, incs, defs):
     # Archivos con su propio main (midifile.c, etc.): se compilan aparte con main renombrado
     base_flags = (['emcc', '-O2', '-w', '-Wno-implicit-function-declaration', '-Wno-int-conversion',
-                   '-Wno-incompatible-pointer-types'] + ['-I' + i for i in incs] + defs)
+                   '-Wno-incompatible-pointer-types', '-sUSE_SDL=2', '-sUSE_SDL_MIXER=2', '-sUSE_SDL_NET=2']
+                  + ['-I' + i for i in incs] + defs)
     os.makedirs('/tmp/alpine_obj', exist_ok=True)
     objs = []
     for i, f in enumerate(RENAMED):
