@@ -158,6 +158,9 @@ def collect(root):
     final = []
     for f in srcs:
         base = os.path.basename(f)
+        if base == 'z_native.c':
+            print('Se omite (duplica z_zone.c):', base)
+            continue
         if base != 'i_main.c' and re.search(r'^\s*(int|void)\s+main\s*\(', rd(f), re.M):
             print('Se omite (tiene otro main):', base)
             continue
